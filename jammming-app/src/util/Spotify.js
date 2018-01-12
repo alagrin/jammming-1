@@ -65,32 +65,52 @@ let Spotify ={
            }
          );
    },
-  savePlaylist(playlistName, trackUris) {
-    if (!playlistName ||!trackUris) {
+
+  savePlaylist(playlistName, trackUris)
+  {
+    console.log(playlistName);
+    console.log(trackUris);
+
+    if (!playlistName || !trackUris) {
+
+      console.log
+
       return;
     }
+
     let accessToken = Spotify.getAccessToken();
+
+    //console.log(accessToken);
+
     let headers = {
       Authorization: 'Bearer ' + accessToken
     };
+
     let userId;
+
     return fetch('https://api.spotify.com/v1/me', {headers: headers})
-    .then(response => response.json())
-    .then(jsonResponse => {
-      userId=jsonResponse.id;
-      return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+      .then(response => response.json())
+      .then(jsonResponse =>
+      {
+        userId = jsonResponse.id;
+
+        return fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
           headers: headers,
 		    	method: 'POST',
 		    	body: JSON.stringify({name: playlistName})})
           .then(response => response.json())
           .then(jsonResponse => {
+
             let playlistID = jsonResponse.id;
+
             return fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistID}/tracks`,
-            {headers: headers,
-		      	method: 'POST',
-		      	body: JSON.stringify({uris: trackUris})});
-          });
-    })
-  }
+            {
+              headers: headers,
+		      	  method: 'POST',
+		      	  body: JSON.stringify({uris: trackUris})});
+            }
+          );
+        })
+      }
 };
 export default Spotify;
