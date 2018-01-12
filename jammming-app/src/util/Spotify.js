@@ -1,49 +1,70 @@
-const id= '5fa558d53ce941068717569b26d3c2bb';
-const redirectUri = "http://localhost:3000/";
-let accessToken ='';
+const clientID = '5fa558d53ce941068717569b26d3c2bb';
+const redirectURI = "http://localhost:3000/";
+
+let accessToken, expiresIn;
 
 let Spotify ={
 
-  getAccessToken(){
+  getAccessToken()
+  {
     if(accessToken) {
       return accessToken;
     }
-    let accessTokenMatch = window.location.href.match(/access_token=([^&]*)/);
-    let expiresInMatch = window.location.href.match(/expires_in=([^&]*)/);
 
-    if (accessTokenMatch && expiresInMatch) {
+    let accessTokenMatch
+      = window.location.href.match(/access_token=([^&]*)/);
+
+
+    let expiresInMatch
+      = window.location.href.match(/expires_in=([^&]*)/);
+
+    //console.log('accessToken: ' + accessTokenMatch[1]);
+    //console.log('accessToken: ' + expiresInMatch[1]);
+
+    if (accessTokenMatch && expiresInMatch)
+    {
       accessToken = accessTokenMatch[1];
-      let expiresIn = Number(expiresInMatch[1]);
+
+      //let expiresIn = Number(expiresInMatch[1]);
+      expiresIn = expiresInMatch[1];
+
       window.setTimeout(() => accessToken = '', expiresIn * 1000);
       window.history.pushState('Access Token', null, '/');
+
       return accessToken;
     } else {
-      window.location = `https://accounts.spotify.com/authorize?client_id=${id}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectUri}`;
+      window.location = `https://accounts.spotify.com/authorize?client_id=${clientID}&response_type=token&scope=playlist-modify-public&redirect_uri=${redirectURI}`;
     }
   },
+  search(term)
+   {
+     const searchURL = `https://api.spotify.com/v1/search?type=track&q=${term}&limit=12`;
 
-  search(term) {
-    let accessToken = Spotify.getAccessToken();
-    return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`,
-      {headers: {Authorization: `Bearer ${accessToken}`}} )
-      .then(response => {
-        return response.json;
-      }).then(jsonResponse => {
-        if (!jsonResponse.tracks) {
-          return [];
-        }
-          return jsonResponse.tracks.items.map(track => {
-            return {
-            id: track.id,
-            name: track.name,
-            artist: track.artists[0].name,
-            album: track.album.name,
-            uri: track.uri
-                    }
-          });
+     return fetch(searchURL, {headers: {Authorization: `Bearer ${accessToken}`}})
 
-      })
-  },
+       .then(response => response.json())
+
+
+         .then(jsonResponse =>
+           {
+             if(jsonResponse.tracks)
+             {
+               return jsonResponse.tracks.items.map(track => {
+                   return {
+                     id: track.id,
+                     name: track.name,
+                     artist: track.artists[0].name,
+                     album: track.album.name,
+                     uri: track.uri
+                   };
+                 }
+               );
+             }
+             else
+               return [];
+           }
+         );
+   },
   savePlaylist(playlistName, trackUris) {
     if (!playlistName ||!trackUris) {
       return;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import SearchBar from '../SearchBar/SearchBar.js';
@@ -13,23 +13,18 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      searchResults: [
-        {id: 1, name: 'Blame it on me', artist: 'George Ezra', album: 'Wanted On Voyage'},
-        {id: 2, name: 'Budapest', artist: 'George Ezra', album: 'Wanted On Voyage'}
-      ],
-
-      playlistName: 'George Ezra',
-
+      searchResults: [],
+      playlistName: '',
       playlistTracks: []
     };
 
     this.addTrack = this.addTrack.bind(this);
-    this.removeTrack =this.removeTrack.bind(this);
-    this.updatePlaylistName =this.updatePlaylistName.bind(this);
+    this.removeTrack = this.removeTrack.bind(this);
+    this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
     this.search = this.search.bind(this);
 
-    //Spotify.getAccessToken();
+    Spotify.getAccessToken();
   }
 
   addTrack(track)
@@ -74,8 +69,8 @@ class App extends React.Component {
   }
 
   search(term) {
-    Spotify.search(term).then(searchResult => {
-      this.setState({searchResults:searchResult})
+    Spotify.search(term).then(
+      searchResult => {this.setState({searchResults:searchResult})
     });
   }
 
@@ -91,7 +86,6 @@ class App extends React.Component {
                   <SearchResults
                     searchResults ={this.state.searchResults}
                     onAdd={this.addTrack}
-
                     isRemoval={false}
                   />
 
@@ -101,6 +95,7 @@ class App extends React.Component {
                     onRemove={this.removeTrack}
                     onNameChange={this.updatePlaylistName}
                     onSave={this.savePlaylist}
+                    isRemoval={true}
                   />
                 </div>
             </div>
