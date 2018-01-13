@@ -28,7 +28,7 @@ class Track extends React.Component {
     this.props.onRemove(this.props.track);
   }
 
-  //renderAction(isRemoval)
+
   renderAction()
   {
     if(this.props.isRemoval)

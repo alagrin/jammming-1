@@ -18,8 +18,6 @@ let Spotify ={
     let expiresInMatch
       = window.location.href.match(/expires_in=([^&]*)/);
 
-    //console.log('accessToken: ' + accessTokenMatch[1]);
-    //console.log('accessToken: ' + expiresInMatch[1]);
 
     if (accessTokenMatch && expiresInMatch)
     {
